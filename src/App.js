@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import './App.css'; // Import the CSS file
 
 function Square({ value, onSquareClick }) {
   return (
     <button className="square" onClick={onSquareClick}>
-      {value}
+      <span className="square-content">
+        <span className="square-value">{value}</span>
+      </span>
     </button>
   );
 }
