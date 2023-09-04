@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import './App.css'; // Import the CSS file
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
 function Square({ value, onSquareClick }) {
   return (
@@ -75,28 +75,93 @@ function calculateWinner(squares) {
   return null;
 }
 
-function AIPlayer({ squares }) {
-  // Implement the Minimax algorithm here to make AI moves
-  return squares;
+function AIPlayer(squares) {
+  const aiPlayer = 'O';
+  const humanPlayer = 'X';
+
+  function minimax(newSquares, player) {
+    const winner = calculateWinner(newSquares);
+    if (winner === aiPlayer) {
+      return { score: 1 };
+    } else if (winner === humanPlayer) {
+      return { score: -1 };
+    } else if (isBoardFull(newSquares)) {
+      return { score: 0 };
+    }
+
+    const moves = [];
+
+    for (let i = 0; i < newSquares.length; i++) {
+      if (!newSquares[i]) {
+        const move = {};
+        move.index = i;
+
+        newSquares[i] = player;
+
+        if (player === aiPlayer) {
+          const result = minimax(newSquares, humanPlayer);
+          move.score = result.score;
+        } else {
+          const result = minimax(newSquares, aiPlayer);
+          move.score = result.score;
+        }
+
+        newSquares[i] = null;
+        moves.push(move);
+      }
+    }
+
+    let bestMove;
+    if (player === aiPlayer) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score > bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score < bestScore) {
+          bestScore = moves[i].score;
+          bestMove = i;
+        }
+      }
+    }
+
+    return moves[bestMove];
+  }
+
+  function isBoardFull(squares) {
+    return squares.every((square) => square !== null);
+  }
+
+  const bestMove = minimax([...squares], aiPlayer);
+
+  return bestMove.index;
 }
 
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
-  const [isMultiplayer, setIsMultiplayer] = useState(false); // Track if the game is multiplayer or single player
+  const [isMultiplayer, setIsMultiplayer] = useState(false);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
+
+  useEffect(() => {
+    if (!isMultiplayer && !xIsNext) {
+      const aiMoveIndex = AIPlayer(currentSquares);
+      const nextSquares = [...currentSquares];
+      nextSquares[aiMoveIndex] = 'O';
+      handlePlay(nextSquares);
+    }
+  }, [currentSquares, xIsNext, isMultiplayer]);
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
-
-    // Check for AI move in single-player mode
-    if (!isMultiplayer && !xIsNext) {
-      const aiSquares = AIPlayer(nextSquares);
-      handlePlay(aiSquares);
-    }
   }
 
   function jumpTo(nextMove) {
