@@ -124,7 +124,7 @@ export default function Game() {
       </div>
       <div className="game-info">
         <div>
-          <button onClick={() => setIsMultiplayer(false)}>Single Player</button>
+          <button onClick={() => setIsMultiplayer(false)} style={{ marginRight: '10px' }}>Single Player</button>
           <button onClick={() => setIsMultiplayer(true)}>Multiplayer</button>
         </div>
         <ol>{moves}</ol>
