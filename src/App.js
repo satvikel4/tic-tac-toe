@@ -146,7 +146,7 @@ export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isMultiplayer, setIsMultiplayer] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false); // Add gameStarted state
+  const [gameStarted, setGameStarted] = useState(false);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
@@ -171,22 +171,35 @@ export default function Game() {
 
   const handleSinglePlayerClick = () => {
     setIsMultiplayer(false);
-    setGameStarted(true); // Set gameStarted to true when the button is clicked
+    setGameStarted(true);
   };
 
   const handleMultiplayerClick = () => {
     setIsMultiplayer(true);
-    setGameStarted(true); // Set gameStarted to true when the button is clicked
+    setGameStarted(true);
   };
 
-  const buttons = !gameStarted ? ( // Render buttons only if the game has not started
+  const startOver = () => {
+    setHistory([Array(9).fill(null)]);
+    setCurrentMove(0);
+    setIsMultiplayer(false);
+    setGameStarted(false);
+  };
+
+  const buttons = !gameStarted ? (
     <div>
       <button onClick={handleSinglePlayerClick} style={{ marginRight: '10px' }}>
         Single Player
       </button>
       <button onClick={handleMultiplayerClick}>Multiplayer</button>
     </div>
-  ) : null; // If the game has started, render nothing
+  ) : null;
+
+  const startOverButton = gameStarted ? (
+    <div>
+      <button onClick={startOver}>Start Over</button>
+    </div>
+  ) : null;
 
   const moves = history.map((squares, move) => {
     let description;
@@ -209,6 +222,7 @@ export default function Game() {
       </div>
       <div className="game-info">
         {buttons}
+        {startOverButton}
         <ol>{moves}</ol>
       </div>
     </div>
