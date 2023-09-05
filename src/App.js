@@ -146,6 +146,7 @@ export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isMultiplayer, setIsMultiplayer] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false); // Add gameStarted state
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
@@ -168,6 +169,25 @@ export default function Game() {
     setCurrentMove(nextMove);
   }
 
+  const handleSinglePlayerClick = () => {
+    setIsMultiplayer(false);
+    setGameStarted(true); // Set gameStarted to true when the button is clicked
+  };
+
+  const handleMultiplayerClick = () => {
+    setIsMultiplayer(true);
+    setGameStarted(true); // Set gameStarted to true when the button is clicked
+  };
+
+  const buttons = !gameStarted ? ( // Render buttons only if the game has not started
+    <div>
+      <button onClick={handleSinglePlayerClick} style={{ marginRight: '10px' }}>
+        Single Player
+      </button>
+      <button onClick={handleMultiplayerClick}>Multiplayer</button>
+    </div>
+  ) : null; // If the game has started, render nothing
+
   const moves = history.map((squares, move) => {
     let description;
     if (move > 0) {
@@ -188,10 +208,7 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <div>
-          <button onClick={() => setIsMultiplayer(false)} style={{ marginRight: '10px' }}>Single Player</button>
-          <button onClick={() => setIsMultiplayer(true)}>Multiplayer</button>
-        </div>
+        {buttons}
         <ol>{moves}</ol>
       </div>
     </div>
